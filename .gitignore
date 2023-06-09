@@ -13,3 +13,12 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
+#VScode
+.vscode
+
+# logs
+*.log
+
+# App data
+clients.data.yml
