@@ -8,7 +8,7 @@ const messageStore = useMessageStore()
 <template>
     <div class="message-grid-container">
         <div class="message-container">
-            <div class="notification is-expanded" v-for="[id, message] of messageStore.messages" :key="id">
+            <div class="notification is-expanded" v-for="[id, message] of messageStore.messages" :key="id" :class="{ 'is-info': message.level == 'info', 'is-warning': message.level == 'warning', 'is-error': message.level == 'error' }" >
                 <button class="delete" @click="messageStore.deleteMessage(id)"></button>
                 {{ message.text }}
             </div>
