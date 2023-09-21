@@ -19,4 +19,12 @@ watch(() => userStore.isLoggedIn, v => {
     router.push(v ? "/" : "/login")
 })
 
+router.beforeEach( async to => {
+    document.title = (to.name?.toString() + " | " || "") + "DDNS Broker"
+
+    if (!userStore.isLoggedIn && to.name !== 'Login') {
+        return { name: "Login" }
+    }
+})
+
 app.mount('#app')

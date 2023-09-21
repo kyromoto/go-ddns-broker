@@ -13,7 +13,7 @@ class UserServiceImpl implements UserService {
 }
 
 export const useUserStore = defineStore('user', () => {
-  const _isLoggedIn :Ref<boolean> = ref(false)
+  const _isLoggedIn :Ref<boolean> = ref(true)
   
   const isLoggedIn :ComputedRef<boolean> = computed(() => _isLoggedIn.value)
 

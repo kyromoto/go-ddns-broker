@@ -12,9 +12,11 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@types/uuid": "9.0.4",
     "bulma": "0.9.4",
     "pinia": "^2.1.6",
     "sass-loader": "13.3.2",
+    "uuid": "9.0.1",
     "vue": "^3.3.4",
     "vue-router": "^4.2.4"
   },

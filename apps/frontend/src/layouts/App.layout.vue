@@ -1,19 +1,32 @@
 <script setup lang="ts">
 import { RouterView, RouterLink } from 'vue-router'
+
+import { useMessageStore } from '@/stores/messageStore';
+
+import Messages from '@/components/Messages.vue'
+
+const messageStore = useMessageStore()
+
+const onBtnClickedNewRandomMsg = () => {
+  messageStore.pushMessage({ text: (new Date()).toISOString(), level: "info" })
+}
+
 </script>
 
 <template>
+
   <div class="layout-container">
     
     <header class="top-row-shadow">
       <div class="head-left"></div>
       <div class="head-center"></div>
       <div class="head-right">
+        <button class="button is-small" @click="onBtnClickedNewRandomMsg">Add random message</button>
         <button class="button is-small is-warning">Logout</button>
       </div>
     </header>
 
-    <div class="bg-darker">
+    <div class="logo bg-darker">
       <RouterLink to="/" class="is-size-5">DDNS Broker</RouterLink>
     </div>
     
@@ -28,6 +41,8 @@ import { RouterView, RouterLink } from 'vue-router'
     </aside>
 
     <main>
+      <Messages></Messages>
+
       <RouterView></RouterView>
     </main>
   </div>
@@ -37,7 +52,7 @@ import { RouterView, RouterLink } from 'vue-router'
 <style scoped lang="scss">
   @import "../assets/scss/main.scss";
 
-  $bg-darker: darken($background, 0.5%); 
+  $bg-darker: darken($background, 0.5%);
 
   div.layout-container {
     width: 100vw;
@@ -57,6 +72,8 @@ import { RouterView, RouterLink } from 'vue-router'
       grid-area: main;
 
       padding: 1rem;
+
+      position: relative;
     }
 
     header {
@@ -70,6 +87,13 @@ import { RouterView, RouterLink } from 'vue-router'
       grid-template-rows: auto;
 
       grid-template-areas: "left center right";
+
+      gap: 0.5rem;
+
+      & > * {
+        display: flex;
+        gap: 0.5rem;
+      }
 
       .head-left {
         grid-area: left;
@@ -88,7 +112,7 @@ import { RouterView, RouterLink } from 'vue-router'
       grid-area: sidebar;
     }
 
-    div {
+    div.logo {
       grid-area: logo;
 
       display: flex;
