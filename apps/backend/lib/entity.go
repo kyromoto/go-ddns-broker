@@ -1,17 +1,17 @@
-package entities
+package lib
 
 import "github.com/google/uuid"
 
 type Entity struct {
-	_uuid uuid.UUID
+	ID uuid.UUID
 }
 
 func (e *Entity) GetUuid() uuid.UUID {
-	return e._uuid
+	return e.ID
 }
 
 func NewEntity() Entity {
 	return Entity{
-		_uuid: uuid.New(),
+		ID: uuid.New(),
 	}
 }

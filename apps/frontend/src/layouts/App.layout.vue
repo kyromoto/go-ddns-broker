@@ -1,9 +1,11 @@
 <script setup lang="ts">
+import { ref, watch } from 'vue';
 import { RouterView, RouterLink } from 'vue-router'
 
 import { useMessageStore } from '@/stores/messageStore';
 
 import Messages from '@/components/Messages.vue'
+import router from '@/router';
 
 const messageStore = useMessageStore()
 
@@ -36,13 +38,13 @@ const onBtnClickedNewRandomMsg = () => {
       </p>
       <ul class="menu-list">
         <li><RouterLink to="Dashboard">Dashboard</RouterLink></li>
+        <li><RouterLink to="Clients">Clients</RouterLink></li>
       </ul>
-      
     </aside>
 
     <main>
       <Messages></Messages>
-
+      <h1 class="is-size-4">{{ router.currentRoute.value.name }}</h1>
       <RouterView></RouterView>
     </main>
   </div>

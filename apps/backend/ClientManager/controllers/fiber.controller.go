@@ -10,7 +10,7 @@ import (
 	"inet.af/netaddr"
 )
 
-func AuthorizeClientWithBasicAuth(clientRepository usecases.ClientRepository) func(c *fiber.Ctx) error {
+func AuthorizeClientWithBasicAuth(clientRepository usecases.ClientRepository) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		ctx := lib.NewContextWithCorrelationIdFromFiber(c)
 
@@ -39,7 +39,7 @@ func AuthorizeClientWithBasicAuth(clientRepository usecases.ClientRepository) fu
 
 }
 
-func UpdateClientIp(clientRepository usecases.ClientRepository, messageService usecases.MessageService) func(*fiber.Ctx) error {
+func UpdateClientIp(clientRepository usecases.ClientRepository, messageService usecases.MessageService) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		ctx := lib.NewContextWithCorrelationIdFromFiber(c)
 
