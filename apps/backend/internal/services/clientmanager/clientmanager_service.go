@@ -1,16 +1,18 @@
 package clientmanager
 
 import (
+	"context"
+
 	"github.com/google/uuid"
 	"inet.af/netaddr"
 )
 
 type Service interface {
-	UpdateIp(clientid uuid.UUID, ip netaddr.IP) error
-	Authenticate(clientid uuid.UUID, password string) bool
+	UpdateIp(ctx context.Context, clientid uuid.UUID, ip netaddr.IP) error
+	Authenticate(ctx context.Context, clientid uuid.UUID, password string) bool
 }
 
-func New(clientRepository ClientRepository, eventbus Eventbus) Service {
+func New(clientRepository ClientRepository, eventbus MessageBus) Service {
 	return &service{
 		clientRepository: clientRepository,
 		eventbus:         eventbus,
@@ -19,14 +21,14 @@ func New(clientRepository ClientRepository, eventbus Eventbus) Service {
 
 type service struct {
 	clientRepository ClientRepository
-	eventbus         Eventbus
+	eventbus         MessageBus
 }
 
-func (s *service) UpdateIp(clientid uuid.UUID, ip netaddr.IP) error {
-	return s.eventbus.PublishClientIpUpdate(clientid, ip)
+func (s *service) UpdateIp(ctx context.Context, clientid uuid.UUID, ip netaddr.IP) error {
+	return s.eventbus.PublishClientIpUpdate(ctx, clientid, ip)
 }
 
-func (s *service) Authenticate(clientid uuid.UUID, password string) bool {
+func (s *service) Authenticate(ctx context.Context, clientid uuid.UUID, password string) bool {
 	client, err := s.clientRepository.FindById(clientid)
 
 	if err != nil {

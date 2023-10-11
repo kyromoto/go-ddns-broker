@@ -16,6 +16,7 @@ require (
 	github.com/mustafaturan/bus/v3 v3.0.3 // indirect
 	github.com/mustafaturan/monoton/v2 v2.0.2 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
+	github.com/rs/zerolog v1.31.0 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.49.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect

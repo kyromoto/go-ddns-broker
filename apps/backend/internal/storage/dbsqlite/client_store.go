@@ -1,4 +1,4 @@
-package clientrepository
+package dbsqlite
 
 import (
 	"github.com/google/uuid"
@@ -11,7 +11,7 @@ type Client struct {
 	PasswordHash []byte    `gorm:"type:bytes"`
 }
 
-func New(db *gorm.DB) clientmanager.ClientRepository {
+func NewClientStore(db *gorm.DB) clientmanager.ClientRepository {
 	db.AutoMigrate(&Client{})
 
 	return &clientRepository{}

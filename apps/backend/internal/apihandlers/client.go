@@ -1,17 +1,24 @@
-package httphandlers
+package apihandlers
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/basicauth"
 	"github.com/google/uuid"
+	"github.com/kyromoto/go-ddns/internal/lib"
 	"github.com/kyromoto/go-ddns/internal/services/clientmanager"
 	"inet.af/netaddr"
 )
 
 func ClientUpdateIp(clientmanager clientmanager.Service) fiber.Handler {
 	return func(c *fiber.Ctx) error {
+		ctx := lib.CreateContextWithCorrelationIDFromRequest(c)
+		logger := lib.LoggerWithCorrelationID(ctx)
+
+		logger.Debug().Msg("got client update ip request")
+
 		ipsAsStr := []string{}
 		ips := []netaddr.IP{}
 
@@ -48,7 +55,7 @@ func ClientUpdateIp(clientmanager clientmanager.Service) fiber.Handler {
 		}
 
 		for _, ip := range ips {
-			if err := clientmanager.UpdateIp(clientid, ip); err != nil {
+			if err := clientmanager.UpdateIp(ctx, clientid, ip); err != nil {
 				return c.Status(http.StatusInternalServerError).SendString("fatal")
 			}
 		}
@@ -66,7 +73,7 @@ func ClientAuthenticate(clientmanager clientmanager.Service) fiber.Handler {
 				return false
 			}
 
-			return clientmanager.Authenticate(clientid, password)
+			return clientmanager.Authenticate(context.Background(), clientid, password)
 		},
 	})
 }
