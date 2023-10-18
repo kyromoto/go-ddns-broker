@@ -4,33 +4,33 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/kyromoto/go-ddns/internal/services/clientmanager"
+	"github.com/kyromoto/go-ddns/internal/services/client"
 	"github.com/kyromoto/go-ddns/internal/services/messagebus"
 	"inet.af/netaddr"
 )
 
-func NewClientmanagerMessageBus(bus *messagebus.MessageBus, topic string) clientmanager.MessageBus {
+func NewClientUpdateIpMessageBusAdapter(bus *messagebus.MessageBus, topic string) client.Messagebus {
 
 	bus.RegisterTopic(topic)
 
-	return &adapterClientmanagerMessageBus{
+	return &clientUpdateIpMessageBusAdapter{
 		bus:   bus,
 		topic: topic,
 	}
 
 }
 
-type adapterClientmanagerMessageBus struct {
+type clientUpdateIpMessageBusAdapter struct {
 	bus   *messagebus.MessageBus
 	topic string
 }
 
-func (b *adapterClientmanagerMessageBus) PublishClientIpUpdate(ctx context.Context, clientid uuid.UUID, ip netaddr.IP) error {
+func (b *clientUpdateIpMessageBusAdapter) SendMessage(ctx context.Context, message client.IpUpdatedMessage) error {
 	return b.bus.Publish(ctx, b.topic, struct {
 		ClientID uuid.UUID
-		IP       netaddr.IP
+		ClientIP netaddr.IP
 	}{
-		ClientID: clientid,
-		IP:       ip,
+		ClientID: message.ClientID,
+		ClientIP: message.ClientIP,
 	})
 }

@@ -1,18 +1,16 @@
-package apihandlers
+package api
 
 import (
-	"context"
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/basicauth"
 	"github.com/google/uuid"
 	"github.com/kyromoto/go-ddns/internal/lib"
-	"github.com/kyromoto/go-ddns/internal/services/clientmanager"
+	"github.com/kyromoto/go-ddns/internal/services/client"
 	"inet.af/netaddr"
 )
 
-func ClientUpdateIp(clientmanager clientmanager.Service) fiber.Handler {
+func HandleCmdClientUpdateIp(clientUpdateIpService client.UpdateIpService) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		ctx := lib.CreateContextWithCorrelationIDFromRequest(c)
 		logger := lib.LoggerWithCorrelationID(ctx)
@@ -55,25 +53,16 @@ func ClientUpdateIp(clientmanager clientmanager.Service) fiber.Handler {
 		}
 
 		for _, ip := range ips {
-			if err := clientmanager.UpdateIp(ctx, clientid, ip); err != nil {
+			props := client.UpdateIpServiceProps{
+				ID: clientid,
+				IP: ip,
+			}
+
+			if err := clientUpdateIpService(ctx, props); err != nil {
 				return c.Status(http.StatusInternalServerError).SendString("fatal")
 			}
 		}
 
 		return c.Status(http.StatusOK).SendString("good")
 	}
-}
-
-func ClientAuthenticate(clientmanager clientmanager.Service) fiber.Handler {
-	return basicauth.New(basicauth.Config{
-		Authorizer: func(clientidAsStr, password string) bool {
-			clientid, err := uuid.Parse(clientidAsStr)
-
-			if err != nil {
-				return false
-			}
-
-			return clientmanager.Authenticate(context.Background(), clientid, password)
-		},
-	})
 }

@@ -10,10 +10,10 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/requestid"
 	"github.com/google/uuid"
 	"github.com/kyromoto/go-ddns/internal/adapter"
-	"github.com/kyromoto/go-ddns/internal/apihandlers"
+	"github.com/kyromoto/go-ddns/internal/api"
 	"github.com/kyromoto/go-ddns/internal/environment"
 	"github.com/kyromoto/go-ddns/internal/lib"
-	"github.com/kyromoto/go-ddns/internal/services/clientmanager"
+	"github.com/kyromoto/go-ddns/internal/services/client"
 	"github.com/kyromoto/go-ddns/internal/services/messagebus"
 	"github.com/kyromoto/go-ddns/internal/storage/dbsqlite"
 	"gorm.io/driver/sqlite"
@@ -54,9 +54,10 @@ func main() {
 	}
 
 	clientStore := dbsqlite.NewClientStore(db)
-	clientManager := clientmanager.New(clientStore, adapter.NewClientmanagerMessageBus(bus, topicClientUpdateIp))
+	clientIpUpdatedMessageBusAdapter := adapter.NewClientUpdateIpMessageBusAdapter(bus, topicClientUpdateIp)
 
 	app := fiber.New(fiber.Config{})
+
 	app.Use(requestid.New(requestid.Config{
 		ContextKey: "requestid",
 		Generator: func() string {
@@ -65,11 +66,13 @@ func main() {
 	}))
 	// app.Use(helmet.New())
 
-	app.Get("/health", apihandlers.Health())
+	app.Get("/health", api.Health())
+	app.Post("/update-ip", api.HandleCmdClientUpdateIp(client.NewUpdateIpService(clientStore, clientIpUpdatedMessageBusAdapter)))
 
 	clientGroup := app.Group("/client")
-	// client.Use(httphandlers.ClientAuthenticate(clientmanager))
-	clientGroup.Post("/update-ip", apihandlers.ClientUpdateIp(clientManager))
+	clientGroup.Post("/create", api.HandleCmdCreateClient(client.NewCreateService(clientStore)))
+	clientGroup.Post("/delete", api.HandleCmdClientDelete(client.NewDeleteService(clientStore)))
+	clientGroup.Post("/change-description", api.HandleCmdClientChangeDescription(client.NewChangeDescriptionService(clientStore)))
 
 	if err := app.Listen(fmt.Sprintf(":%v", environment.HttpPort(3333))); err != nil {
 		panic(err)
